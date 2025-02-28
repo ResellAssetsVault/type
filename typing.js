@@ -1,28 +1,28 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("✅ Typing effect script loaded successfully.");
 
-    // Select the text element
-    const textElement = document.querySelector("#dynamic-text");
+    // Try multiple ways to select the element
+    let textElement = document.querySelector("#dynamic-text") || document.querySelector(".hero-dynamic-text");
 
     if (!textElement) {
-        console.error("❌ ERROR: Element #dynamic-text not found!");
+        console.error("❌ ERROR: Element #dynamic-text or .hero-dynamic-text not found!");
         return;
     }
 
-    // Define the words to cycle through
+    // Define words to cycle through
     const words = ["REELS", "HOOKS", "COVERS", "& MORE"];
     let index = 0;
 
-    // Function to change text
     function changeText() {
-        textElement.style.opacity = 0; // Fade out effect
+        if (!textElement) return;
+        textElement.style.opacity = 0;
         setTimeout(() => {
             textElement.textContent = words[index];
-            textElement.style.opacity = 1; // Fade in effect
+            textElement.style.opacity = 1;
             index = (index + 1) % words.length;
-        }, 300); // Smooth transition delay
+        }, 300);
     }
 
     // Start the text animation
-    setInterval(changeText, 1500); // Change text every 1.5 seconds
+    setInterval(changeText, 1500);
 });
