@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     console.log("✅ Typing effect script loaded successfully.");
 
-    // Get the text element
+    // Select the text element
     const textElement = document.querySelector("#dynamic-text");
 
     if (!textElement) {
