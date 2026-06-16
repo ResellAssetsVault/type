@@ -1,28 +1,29 @@
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("✅ Typing effect script loaded successfully.");
+function initTypingEffect() {
+    var textElement = document.querySelector("#dynamic-text") || document.querySelector(".hero-dynamic-text");
 
-    // Try multiple ways to select the element
-    let textElement = document.querySelector("#dynamic-text") || document.querySelector(".hero-dynamic-text");
+    if (!textElement) { return; }
 
-    if (!textElement) {
-        console.error("❌ ERROR: Element #dynamic-text or .hero-dynamic-text not found!");
-        return;
-    }
+    // Ensure opacity transition works on Android TV WebView
+    textElement.style.transition = "opacity 0.3s ease";
+    textElement.style.opacity = "1";
 
-    // Define words to cycle through
-    const words = ["REELS", "HOOKS", "COVERS", "& MORE"];
-    let index = 0;
+    var words = ["REELS", "HOOKS", "COVERS", "& MORE"];
+    var index = 0;
 
     function changeText() {
-        if (!textElement) return;
-        textElement.style.opacity = 0;
-        setTimeout(() => {
-            textElement.textContent = words[index];
-            textElement.style.opacity = 1;
+        textElement.style.opacity = "0";
+        setTimeout(function() {
             index = (index + 1) % words.length;
+            textElement.textContent = words[index];
+            textElement.style.opacity = "1";
         }, 300);
     }
 
-    // Start the text animation
     setInterval(changeText, 1500);
-});
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTypingEffect);
+} else {
+    initTypingEffect();
+}

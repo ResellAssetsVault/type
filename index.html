@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1280">
+    <title>Projector Guy – XBJ 360</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ─── SPLASH 1: Brand intro ───────────────────────────────────────────── -->
+    <div id="splash-1" class="screen splash-1 active">
+        <div class="splash1-inner">
+            <div class="pg-logo-mark">
+                <div class="logo-ring"></div>
+                <span class="logo-dot"></span>
+            </div>
+            <h1 class="pg-brand">PROJECTOR GUY</h1>
+            <div class="splash1-bar"><div class="splash1-progress"></div></div>
+        </div>
+    </div>
+
+    <!-- ─── SPLASH 2: Entering Mode ────────────────────────────────────────── -->
+    <div id="splash-2" class="screen splash-2">
+        <div class="s2-bg-gradient"></div>
+
+        <!-- Replace a5-pro.png with your own cutout (transparent PNG, device only) -->
+        <div class="s2-device-wrap">
+            <img src="assets/a5-pro.png" alt="A5 Pro Projector" class="s2-device"
+                 onerror="this.style.display='none';document.querySelector('.s2-device-placeholder').style.display='flex'">
+            <!-- Placeholder shown if image not yet added -->
+            <div class="s2-device-placeholder">
+                <div class="placeholder-box">
+                    <span>📷</span>
+                    <small>Add assets/a5-pro.png<br>(cutout PNG)</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="s2-content">
+            <div class="s2-badge">SMART PROJECTOR</div>
+            <h2 class="s2-model">XBJ 360</h2>
+            <p class="s2-tagline">Google TV · 4K · 360° Sound</p>
+            <div class="s2-apps">
+                <div class="s2-app-icon" style="background:#FF0000">▶</div>
+                <div class="s2-app-icon" style="background:#E50914">N</div>
+                <div class="s2-app-icon" style="background:#00A8E0">🎬</div>
+                <div class="s2-app-icon" style="background:#1DB954">♪</div>
+                <div class="s2-app-icon" style="background:#FF9900">p</div>
+            </div>
+            <p class="s2-sub">Please download any application.</p>
+            <div class="s2-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── APP SCREEN: Google TV Style ────────────────────────────────────── -->
+    <div id="app-screen" class="screen app-screen">
+
+        <!-- Navigation bar -->
+        <nav class="gtv-nav">
+            <div class="nav-brand">
+                <div class="nav-logo-mark"><span></span></div>
+                <span class="nav-brand-name">Projector Guy</span>
+            </div>
+            <ul class="nav-items">
+                <li class="nav-item">
+                    <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                    Search
+                </li>
+                <li class="nav-item active">For you</li>
+                <li class="nav-item">Movies</li>
+                <li class="nav-item">Shows</li>
+                <li class="nav-item">Apps</li>
+                <li class="nav-item">Shop</li>
+            </ul>
+            <div class="nav-avatar">PG</div>
+        </nav>
+
+        <!-- Hero Banner -->
+        <div class="hero-banner">
+            <div class="hero-bg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-left">
+                <div class="hero-platform-logo">
+                    <svg viewBox="0 0 90 20" fill="white" height="18">
+                        <text y="16" font-size="14" font-weight="bold" letter-spacing="2">TikTok Shop</text>
+                    </svg>
+                </div>
+                <h1 class="hero-title">PROJECTOR GUY</h1>
+                <p class="hero-desc">Stream <span id="dynamic-text" class="hero-dynamic">REELS</span> on the ultimate smart projector experience.</p>
+                <div class="hero-actions">
+                    <button class="btn-primary">▶ &nbsp;Shop Now</button>
+                    <button class="btn-secondary">ⓘ &nbsp;More Info</button>
+                </div>
+            </div>
+            <div class="hero-dots">
+                <span class="hdot active"></span>
+                <span class="hdot"></span>
+                <span class="hdot"></span>
+                <span class="hdot"></span>
+                <span class="hdot"></span>
+            </div>
+        </div>
+
+        <!-- Content rows -->
+        <div class="content-area">
+
+            <!-- Top picks row -->
+            <div class="content-row">
+                <h3 class="row-title">Top picks for you</h3>
+                <div class="row-scroll">
+                    <div class="content-card" style="background:linear-gradient(135deg,#1a1a2e,#16213e)">
+                        <div class="card-label">XBJ 360</div>
+                        <div class="card-badge">NEW</div>
+                    </div>
+                    <div class="content-card" style="background:linear-gradient(135deg,#0f3460,#533483)">
+                        <div class="card-label">A5 Pro</div>
+                    </div>
+                    <div class="content-card" style="background:linear-gradient(135deg,#e94560,#0f3460)">
+                        <div class="card-label">Bundle Deal</div>
+                        <div class="card-badge">SALE</div>
+                    </div>
+                    <div class="content-card" style="background:linear-gradient(135deg,#2d6a4f,#1b4332)">
+                        <div class="card-label">Accessories</div>
+                    </div>
+                    <div class="content-card" style="background:linear-gradient(135deg,#6a0572,#11002f)">
+                        <div class="card-label">4K Edition</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Apps row -->
+            <div class="content-row">
+                <h3 class="row-title">Your apps</h3>
+                <div class="app-row">
+                    <div class="app-tile" style="background:#FF0000">
+                        <span class="app-icon">▶</span>
+                        <span class="app-name">YouTube</span>
+                    </div>
+                    <div class="app-tile" style="background:#00A8E0">
+                        <span class="app-icon">🎬</span>
+                        <span class="app-name">Disney+</span>
+                    </div>
+                    <div class="app-tile" style="background:#E50914">
+                        <span class="app-icon">N</span>
+                        <span class="app-name">Netflix</span>
+                    </div>
+                    <div class="app-tile" style="background:#1C1C1C; border:1px solid #333">
+                        <span class="app-icon">🍎</span>
+                        <span class="app-name">Apple TV</span>
+                    </div>
+                    <div class="app-tile" style="background:#FF9900">
+                        <span class="app-icon">p</span>
+                        <span class="app-name">Prime</span>
+                    </div>
+                    <div class="app-tile" style="background:#1DB954">
+                        <span class="app-icon">♪</span>
+                        <span class="app-name">Spotify</span>
+                    </div>
+                    <div class="app-tile" style="background:#000000; border:1px solid #222">
+                        <span class="app-icon">♪</span>
+                        <span class="app-name">TikTok</span>
+                    </div>
+                    <div class="app-tile app-tile-more" style="background:#1A1A1A; border:1px solid #333">
+                        <span class="app-icon">+</span>
+                        <span class="app-name">More</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="typing.js"></script>
+    <script src="screen-flow.js"></script>
+</body>
+</html>
