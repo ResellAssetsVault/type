@@ -34,45 +34,48 @@ document.addEventListener("DOMContentLoaded", function() {
         link.setAttribute("download", "Downloader.apk");
     });
 
-    // Apps carousel — targets #apps-carousel or .apps-carousel
+    // Apps carousel — targets #apps-carousel, .apps-carousel, #apps-grid, .apps-grid
     function initCarousel(container) {
-        const items = Array.from(container.children);
+        var items = Array.from(container.children);
         if (items.length === 0) return;
 
-        // Build track
-        const track = document.createElement("div");
-        track.className = "carousel-track";
+        // Build track — inline styles override any existing grid/flex CSS
+        var track = document.createElement("div");
+        track.style.cssText = "display:flex;gap:12px;transition:transform .35s ease;will-change:transform;";
         items.forEach(function(item) {
-            item.classList.add("carousel-item");
+            item.style.flex = "0 0 auto";
             track.appendChild(item);
         });
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "carousel-wrapper";
+        var wrapper = document.createElement("div");
+        wrapper.style.cssText = "flex:1;overflow:hidden;min-width:0;";
         wrapper.appendChild(track);
 
-        const prevBtn = document.createElement("button");
-        prevBtn.className = "carousel-btn carousel-btn--prev";
-        prevBtn.innerHTML = "&#8249;";
-        prevBtn.setAttribute("aria-label", "Previous");
+        function makeBtn(symbol, label) {
+            var btn = document.createElement("button");
+            btn.innerHTML = symbol;
+            btn.setAttribute("aria-label", label);
+            btn.style.cssText = "background:rgba(255,255,255,.15);border:none;color:#fff;font-size:2rem;line-height:1;padding:8px 14px;cursor:pointer;border-radius:6px;transition:background .2s;flex-shrink:0;";
+            btn.onmouseenter = function() { this.style.background = "rgba(255,255,255,.3)"; };
+            btn.onmouseleave = function() { this.style.background = "rgba(255,255,255,.15)"; };
+            return btn;
+        }
 
-        const nextBtn = document.createElement("button");
-        nextBtn.className = "carousel-btn carousel-btn--next";
-        nextBtn.innerHTML = "&#8250;";
-        nextBtn.setAttribute("aria-label", "Next");
+        var prevBtn = makeBtn("&#8249;", "Previous");
+        var nextBtn = makeBtn("&#8250;", "Next");
 
+        // Override whatever layout the container had
         container.innerHTML = "";
-        container.classList.add("carousel-container");
+        container.style.cssText = container.style.cssText + ";display:flex!important;align-items:center;gap:8px;overflow:hidden;";
         container.appendChild(prevBtn);
         container.appendChild(wrapper);
         container.appendChild(nextBtn);
 
-        let currentIndex = 0;
+        var currentIndex = 0;
 
         function getItemWidth() {
             if (!items[0]) return 200;
-            var style = getComputedStyle(items[0]);
-            return items[0].offsetWidth + parseInt(style.marginRight || 0) + 12;
+            return items[0].offsetWidth + 12;
         }
 
         function getVisibleCount() {
@@ -84,7 +87,11 @@ document.addEventListener("DOMContentLoaded", function() {
             currentIndex = Math.min(Math.max(index, 0), maxIndex);
             track.style.transform = "translateX(-" + (currentIndex * getItemWidth()) + "px)";
             prevBtn.disabled = currentIndex === 0;
+            prevBtn.style.opacity = currentIndex === 0 ? "0.3" : "1";
+            prevBtn.style.cursor = currentIndex === 0 ? "default" : "pointer";
             nextBtn.disabled = currentIndex >= maxIndex;
+            nextBtn.style.opacity = currentIndex >= maxIndex ? "0.3" : "1";
+            nextBtn.style.cursor = currentIndex >= maxIndex ? "default" : "pointer";
         }
 
         prevBtn.addEventListener("click", function() { scrollTo(currentIndex - 1); });
@@ -100,25 +107,9 @@ document.addEventListener("DOMContentLoaded", function() {
             if (Math.abs(diff) > 50) scrollTo(currentIndex + (diff > 0 ? 1 : -1));
         }, { passive: true });
 
-        // Inject styles once
-        if (!document.getElementById("carousel-styles")) {
-            var style = document.createElement("style");
-            style.id = "carousel-styles";
-            style.textContent = [
-                ".carousel-container{position:relative;display:flex;align-items:center;gap:8px;overflow:hidden}",
-                ".carousel-wrapper{flex:1;overflow:hidden}",
-                ".carousel-track{display:flex;gap:12px;transition:transform .35s ease}",
-                ".carousel-item{flex:0 0 auto}",
-                ".carousel-btn{background:rgba(255,255,255,.15);border:none;color:#fff;font-size:2rem;line-height:1;padding:8px 14px;cursor:pointer;border-radius:6px;transition:background .2s;flex-shrink:0}",
-                ".carousel-btn:hover{background:rgba(255,255,255,.3)}",
-                ".carousel-btn:disabled{opacity:.3;cursor:default}"
-            ].join("");
-            document.head.appendChild(style);
-        }
-
         scrollTo(0);
         window.addEventListener("resize", function() { scrollTo(currentIndex); });
     }
 
-    document.querySelectorAll("#apps-carousel, .apps-carousel").forEach(initCarousel);
+    document.querySelectorAll("#apps-carousel, .apps-carousel, #apps-grid, .apps-grid").forEach(initCarousel);
 });
