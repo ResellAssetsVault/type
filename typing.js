@@ -25,4 +25,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Start the text animation
     setInterval(changeText, 1500);
+
+    // Wire up Downloader app download link
+    const DOWNLOADER_URL = "https://karlbutlertts.github.io/xbj-apk-store/apks/Downloader.apk";
+    const downloaderLinks = document.querySelectorAll("#downloader-link, .downloader-link, [data-downloader-app]");
+    downloaderLinks.forEach(function(link) {
+        link.href = DOWNLOADER_URL;
+        link.setAttribute("download", "Downloader.apk");
+    });
 });
