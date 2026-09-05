@@ -19,7 +19,9 @@
 <main>
   <h1>Install a whole set of apps at once</h1>
   <p class="lede">Pick a bundle and we'll walk you through every app in it, one after another.
-     Android still asks you to confirm each install — that prompt is the phone's, not ours.</p>
+     Bundles are built from the store's own <code>apps.json</code>, so adding an app there
+     puts it in the right bundle automatically. Android still asks you to confirm each
+     install — that prompt is the projector's, not ours.</p>
 
   <!-- Bundle cards render into here, straight from bundles.json -->
   <div id="app-bundles"></div>
@@ -27,7 +29,7 @@
   <!-- Or wire your own existing buttons anywhere on the page -->
   <div class="quick">
     <button data-bundle="live-tv">📺 Live TV bundle</button>
-    <button data-bundle="tools">🛠️ Setup tools</button>
+    <button data-bundle="essentials">🛠️ Essentials</button>
   </div>
 </main>
 

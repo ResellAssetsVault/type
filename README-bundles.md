@@ -1,115 +1,117 @@
 # App bundles — install a whole set of apps in one go
 
-A **bundle** is a named group of apps: tap *Live TV* and you get BBC iPlayer, ITVX,
-Channel 4, My5, UKTV Play and STV Player, instead of finding each APK yourself.
+A **bundle** is a named group of apps: the buyer taps *Live TV* once and gets BBC
+iPlayer, ITVX, Channel 4 and My5, instead of finding each one on the shelves.
 
 | File | What it is |
 | --- | --- |
-| `bundles.json` | The list of bundles and the apps in each. Edit this, nothing else. |
 | `app-bundles.js` | Drop-in script: renders the bundle cards and runs the install walkthrough. |
-| `bundles-demo.html` | A working page you can open to see it, and copy the markup from. |
+| `bundles.json` | Which bundles exist. App data is **not** duplicated here — see below. |
+| `bundles-demo.html` | A working page to see it and copy the markup from. |
+
+## It reads apps.json, it doesn't copy it
+
+`apps.json` in `xbj-apk-store` is already the source of truth, and its `tags` already
+map onto the bundles. So a bundle is defined by tag, not by a second list of apps:
+
+```json
+{ "id": "live-tv", "name": "Live TV", "icon": "📺", "tags": ["livetv"] }
+```
+
+Add a new app to `apps.json` with `"tags": ["livetv"]` and it appears in the Live TV
+bundle on the next load. Nothing here to update. For a hand-picked set, list package
+names instead and they keep the order you write them in:
+
+```json
+{ "id": "essentials", "name": "Essentials",
+  "packages": ["com.projectorguy.app", "com.esaba.downloader", "com.player.bear"] }
+```
+
+The script also reuses the store shell's own logic when it's on the page:
+
+- **`visibleApps()`** — so bundles respect the projector model the buyer picked and
+  the locked Entertainment section. Sports and Movies bundles simply don't appear
+  until Entertainment is unlocked, because their apps live under `apks/entertainment/`.
+- **`appHref()`** — so URLs, including the `media.githubusercontent.com` override that
+  Git LFS files like Roblox need, come out identical to the card links.
+- **`window._allApps`** — reused rather than fetching `apps.json` a second time.
+- **`preinstalled: true`** apps are shown greyed as *Already installed* and never queued.
+
+Standalone (outside the shell) it fetches `apps.json` itself and applies the same rules,
+minus model filtering, since no model has been chosen.
+
+## Installing inside the Projector Guy App
+
+When `AndroidBridge.downloadApp()` is present the queue uses it, exactly like the card
+links do — so bundle installs happen in place instead of bouncing the user out to the
+system Downloads app. The button reads *Install BBC iPlayer* rather than *Download*.
+
+That's the important bit: **you already have the companion app**, so the good version
+of this feature is available to you and not just theoretical.
 
 ## What "install all at once" can actually mean
 
-A web page can never install an APK silently — Android shows its own
-*"Do you want to install this app?"* screen for every package, and there is no
-browser API that skips it. Anything claiming otherwise is either an app with
-special privileges or malware.
+A web page can never install an APK silently. Android shows its own *"Do you want to
+install this app?"* screen for every package, and no browser API skips it. Three levels:
 
-So there are three levels, and this repo implements the first:
+**1. Guided bundle install — what this is.** One tap starts the bundle; the apps are
+handed over one at a time with progress tracked, so six apps become six Next presses
+instead of six trips around the store. Works everywhere, today, no permissions.
 
-**1. Guided bundle install (what's here now).** One tap starts the bundle; the page
-downloads the apps one at a time and tracks where you are up to, so the user just
-keeps confirming Android's prompt and pressing *Next*. Six apps go from "find and
-download six files" to "press Next six times". No special permissions, works today,
-works on any device.
+**2. Bridge-driven queue — a small change to the Projector Guy App.** Today the bridge
+takes one app at a time. Give it a bundle method and the app can hold the whole queue
+itself: download in the background, install each in turn, survive the user leaving the
+page, and skip anything already installed at the right version:
 
-**2. A companion installer app (true one-tap).** A small APK the user sideloads
-*once*. It reads this same `bundles.json` from your site, downloads each APK, and
-fires them at the system installer back to back. On stock Android there is still one
-confirmation per app, but the user never touches a browser or a file manager — and
-the app can show real progress, verify checksums, and skip apps already installed.
-The manifest is deliberately app-readable so this is a drop-in later:
-
-```kotlin
-// Sketch: for each app in the bundle, download then hand to the package installer.
-val session = packageInstaller.openSession(
-    packageInstaller.createSession(
-        PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL)
-    )
-)
-session.openWrite("apk", 0, apkFile.length()).use { out -> apkFile.inputStream().copyTo(out) }
-session.commit(pendingIntent.intentSender)   // Android shows its confirm screen here
+```java
+@JavascriptInterface
+public void installBundle(String json) {   // [{"url":..,"name":..,"packageName":..}, ...]
+    // download each in turn, then hand to PackageInstaller;
+    // Android still shows one confirm screen per app.
+}
 ```
 
-Needs `REQUEST_INSTALL_PACKAGES` in the manifest, and the user granting
-"Install unknown apps" to your installer once.
+`app-bundles.js` calls `AndroidBridge.downloadApp()` per app, so adding
+`installBundle()` is a small, additive change — the web side keeps working unchanged
+on anything that doesn't have it.
 
-**3. Genuinely silent installs.** Only for a device provisioned as *device owner*
-(`adb shell dpm set-device-owner ...` on a freshly reset device) or a managed/MDM
-fleet. Fine for boxes you set up yourself before handing over; not something a
-customer can turn on from a website.
+**3. Genuinely silent installs.** Only where the app is *device owner*
+(`adb shell dpm set-device-owner` on a freshly reset device) or the projector ships
+with the app as a system/privileged app holding `INSTALL_PACKAGES`. That's realistic
+for units you flash before sending out, not something a buyer enables from a web page.
 
-## Adding it to your site
+## Adding it to the store
+
+Drop `app-bundles.js` and `bundles.json` into `xbj-apk-store`, then in `index.html`:
 
 ```html
 <div id="app-bundles"></div>
 <script src="app-bundles.js" data-manifest="bundles.json" defer></script>
 ```
 
-That renders a card per bundle. To trigger a bundle from a button you already have,
-give it a `data-bundle` attribute:
+To trigger a bundle from a button, hub card, or sidebar item you already have:
 
 ```html
-<button data-bundle="live-tv">📺 Live TV bundle</button>
+<button data-bundle="live-tv" class="nav-focusable">📺 Live TV bundle</button>
 ```
 
-Deep links work too, so you can put one on a QR code or in a support message:
+Deep links work too, which suits a QR code on the packaging or a support message:
 
 ```
-https://yoursite.com/?bundle=live-tv
+https://karlbutlertts.github.io/xbj-apk-store/?bundle=live-tv
 ```
 
-If `bundles.json` can't be loaded, the script falls back to a small built-in list so
-the page never renders empty.
+Two integration points worth wiring:
 
-## Editing the bundles
+- Call `window.refreshAppBundles()` after `checkCode()` unlocks Entertainment or after
+  `changeModel()`, so the cards redraw against the new filter. (It also redraws by
+  itself once `_allApps` first loads.)
+- Buttons get `nav-focusable` so the existing D-pad spatial navigation picks them up.
+  The modal handles Escape and the remote's Back button.
 
-```json
-{
-  "baseUrl": "https://karlbutlertts.github.io/xbj-apk-store/apks/",
-  "bundles": [
-    {
-      "id": "live-tv",
-      "name": "Live TV",
-      "icon": "📺",
-      "description": "UK free-to-air live and catch-up players.",
-      "apps": [
-        { "id": "itvx", "name": "ITVX", "file": "ITVX.apk", "package": "air.ITVMobilePlayer" }
-      ]
-    }
-  ]
-}
-```
+## Fire TV / other TV browsers
 
-- `file` is appended to `baseUrl`. Set `url` on an app instead to point somewhere
-  else entirely — including a store deep link such as
-  `amzn://apps/android?p=com.example` or `market://details?id=com.example`, which is
-  the cleaner route for any app that's already in the Amazon Appstore or Play Store.
-- `package` isn't used by the web page; it's there so a companion app can check
-  whether the app is already installed.
-- **Check the filenames match what's actually in your `apks/` folder** — the ones in
-  `bundles.json` are the expected names, not verified against the live store.
-
-## Fire TV / Android TV
-
-The script detects TV browsers and switches to a list of addresses with copy buttons,
-because TV browsers have no usable download manager. Users type each address into
-Downloader. The Setup Tools bundle leads with Downloader itself for that reason.
-
-## One thing worth checking
-
-Re-hosting other companies' APKs (iPlayer, ITVX, Netflix and so on) is their call,
-not yours, and the big ones do send takedowns. Where an app is already on the Amazon
-Appstore or Play Store, pointing an entry's `url` at the store deep link gives users
-auto-updates and keeps you out of it — the bundle experience is identical either way.
+Browsers on TV hardware get a list of addresses with copy buttons instead of download
+buttons, since they have no usable download manager — the user types each into
+Downloader. The Projector Guy App is a WebView on a TV but has the bridge, so it takes
+the install path, not this one.
