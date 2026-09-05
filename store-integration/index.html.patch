@@ -1,0 +1,56 @@
+diff --git a/index.html b/index.html
+index de9a5d4..4d220cf 100644
+--- a/index.html
++++ b/index.html
+@@ -1279,6 +1279,7 @@ function renderHome() {
+     ? rowHtml('Entertainment', newestFirst(hiddenApps()))
+     : '';
+   return heroHtml(recent[0])
++    + bundlesRowHtml()
+     + rowHtml('Recently updated', recent)
+     + rowHtml('📺 Live TV apps', byTag(open, 'livetv'))
+     + rowHtml('🎬 Streaming', byTag(open, 'streaming'))
+@@ -1290,6 +1291,22 @@ function renderHome() {
+        </section>`;
+ }
+ 
++// Empty shell for app-bundles.js to fill — it draws one card per bundle from
++// bundles.json, using apps.json for the apps themselves. Rendered here rather
++// than by the script alone so it sits inside the normal Home layout, and
++// redrawn from setView() below because viewBody.innerHTML wipes it each time.
++function bundlesRowHtml() {
++  if (typeof window.refreshAppBundles !== 'function') return '';
++  return `
++    <section class="row">
++      <div class="row-head">
++        <div class="row-title">Install a whole set</div>
++        <div class="row-count">One tap, the lot</div>
++      </div>
++      <div class="app-bundles"></div>
++    </section>`;
++}
++
+ function renderAppView(view) {
+   const open = openApps();
+   const titles = { all:'All apps', livetv:'📺 Live TV apps', streaming:'🎬 Streaming', tools:'🛠️ Tools' };
+@@ -1390,6 +1407,10 @@ function setView(view, opts) {
+   else if (view === 'settings')      viewBody.innerHTML = renderSettings();
+   else                               viewBody.innerHTML = renderAppView(view);
+ 
++  // viewBody.innerHTML above wiped any bundle cards — put them back, now
++  // reflecting whatever changed (projector model, Entertainment unlocked).
++  if (typeof window.refreshAppBundles === 'function') window.refreshAppBundles();
++
+   window.scrollTo(0, 0);
+   if (view === 'search') {
+     renderSearchResults('');
+@@ -1874,5 +1895,9 @@ fetch(MANIFEST_URL + '?nc=' + Date.now())
+   });
+ </script>
+ 
++<!-- App bundles: one card per group in bundles.json, apps pulled from apps.json.
++     Loads after the shell above so it can reuse visibleApps() and appHref(). -->
++<script src="app-bundles.js" data-manifest="bundles.json" defer></script>
++
+ </body>
+ </html>

@@ -507,13 +507,16 @@
 
     /* ---------------------------------------------------------------- styles */
 
+    /* Colours come from the store shell's CSS variables (--accent, --accent-deep,
+       --surface, --border), so swapping the brand accent there carries the bundles
+       with it. The literals are fallbacks for standalone pages. */
     function injectStyles() {
         if (document.getElementById("bundle-styles")) return;
         var style = el("style");
         style.id = "bundle-styles";
         style.textContent = [
             ".bundle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}",
-            ".bundle-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:18px;border:1px solid rgba(255,255,255,.15);border-radius:14px;background:rgba(255,255,255,.06);color:inherit;font:inherit;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}",
+            ".bundle-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:18px;border:1px solid var(--border,rgba(255,255,255,.15));border-radius:14px;background:var(--surface,rgba(255,255,255,.06));color:inherit;font:inherit;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}",
             ".bundle-card:hover,.bundle-card:focus-visible,.bundle-card:focus{transform:translateY(-2px);background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.45);outline:none}",
             ".bundle-card__icon{font-size:2rem}",
             ".bundle-card__name{font-size:1.15rem;font-weight:700}",
@@ -526,7 +529,7 @@
             /* display:flex above beats the browser's [hidden] rule, so restate it —
                without this the closed overlay stays invisible but swallows every click. */
             ".bundle-overlay[hidden]{display:none}",
-            ".bundle-modal{width:min(560px,100%);max-height:88vh;overflow:auto;background:#15161a;color:#f4f4f5;border:1px solid rgba(255,255,255,.15);border-radius:16px;display:flex;flex-direction:column}",
+            ".bundle-modal{width:min(560px,100%);max-height:88vh;overflow:auto;background:var(--bg,#15161a);color:var(--text,#f4f4f5);border:1px solid var(--border,rgba(255,255,255,.15));border-radius:16px;display:flex;flex-direction:column}",
             ".bundle-modal__head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.1)}",
             ".bundle-modal__title{margin:0;font-size:1.25rem}",
             ".bundle-modal__close{background:none;border:none;color:inherit;font-size:1.1rem;cursor:pointer;padding:6px;border-radius:6px}",
@@ -539,13 +542,13 @@
             ".bundle-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer}",
             ".bundle-row:hover{background:rgba(255,255,255,.07)}",
             ".bundle-row.is-preinstalled{opacity:.5;cursor:default}",
-            ".bundle-row__check{width:18px;height:18px;accent-color:#5aa6ff;flex-shrink:0}",
+            ".bundle-row__check{width:18px;height:18px;accent-color:var(--accent,#5aa6ff);flex-shrink:0}",
             ".bundle-row__name{flex:1;font-weight:600}",
             ".bundle-row__meta{font-size:.75rem;opacity:.55}",
 
             ".bundle-steps{display:flex;flex-direction:column;gap:4px}",
             ".bundle-step{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.04)}",
-            ".bundle-step.is-current{background:rgba(90,166,255,.18);box-shadow:inset 0 0 0 1px rgba(90,166,255,.55)}",
+            ".bundle-step.is-current{background:color-mix(in srgb,var(--accent,#5aa6ff) 18%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent,#5aa6ff) 55%,transparent)}",
             ".bundle-step.is-done{opacity:.55}",
             ".bundle-step__num{width:26px;height:26px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.12);font-size:.8rem;font-weight:700}",
             ".bundle-step__main{flex:1;min-width:0}",
@@ -554,11 +557,11 @@
             ".bundle-step__url{font-size:.8rem;opacity:.7;word-break:break-all;font-family:ui-monospace,Menlo,Consolas,monospace}",
 
             ".bundle-progress{height:6px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}",
-            ".bundle-progress__bar{height:100%;width:0;background:#5aa6ff;transition:width .3s ease}",
+            ".bundle-progress__bar{height:100%;width:0;background:var(--accent,#5aa6ff);transition:width .3s ease}",
 
             ".bundle-btn{font:inherit;font-weight:600;padding:10px 18px;border-radius:10px;border:1px solid transparent;cursor:pointer;transition:background .15s,border-color .15s}",
-            ".bundle-btn--primary{background:#2563d6;color:#fff}",
-            ".bundle-btn--primary:hover,.bundle-btn--primary:focus{background:#1d51b0;outline:none}",
+            ".bundle-btn--primary{background:var(--accent-deep,#2563d6);color:#fff}",
+            ".bundle-btn--primary:hover,.bundle-btn--primary:focus{background:var(--accent,#5aa6ff);color:var(--accent-ink,#07111f);outline:none}",
             ".bundle-btn--ghost{background:transparent;color:inherit;border-color:rgba(255,255,255,.25)}",
             ".bundle-btn--ghost:hover,.bundle-btn--ghost:focus{background:rgba(255,255,255,.12);outline:none}",
             "@media (max-width:480px){.bundle-modal__foot{flex-direction:column-reverse}.bundle-btn{width:100%}}"
@@ -586,7 +589,19 @@
     }
 
     function render() {
-        document.querySelectorAll("#app-bundles, .app-bundles").forEach(renderCards);
+        var targets = document.querySelectorAll("#app-bundles, .app-bundles");
+        targets.forEach(renderCards);
+        return targets.length;
+    }
+
+    /* The store shell draws its bundles row only once refreshAppBundles exists, so a
+       view rendered while we were still fetching has no container for us. Ask the
+       shell to re-render that one time. Guarded on there being no container at all,
+       so it can't loop. */
+    function claimShellRow() {
+        if (typeof window.refreshView !== "function") return;
+        if (document.querySelector("#app-bundles, .app-bundles")) return;
+        try { window.refreshView(); } catch (e) { /* shell not ready; next view will do it */ }
     }
 
     function start() {
@@ -598,6 +613,7 @@
         /* The shell may unlock Entertainment or change the projector model after
            we've drawn the cards — let it tell us to redraw. */
         window.refreshAppBundles = render;
+        claimShellRow();
         watchShellCatalog();
     }
 

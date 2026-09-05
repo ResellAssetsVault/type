@@ -82,7 +82,13 @@ for units you flash before sending out, not something a buyer enables from a web
 
 ## Adding it to the store
 
-Drop `app-bundles.js` and `bundles.json` into `xbj-apk-store`, then in `index.html`:
+**This is already done and tested — see [`store-integration/`](store-integration/) for
+the patch and the one-command apply.** It's a patch rather than a pushed branch only
+because the session that wrote it had read-only access to `xbj-apk-store`.
+
+The whole integration is four small hunks in `index.html`: a bundles row on Home, a
+`refreshAppBundles()` call in `setView()`, and the script tag. On any other page it's
+just:
 
 ```html
 <div id="app-bundles"></div>
