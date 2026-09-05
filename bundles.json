@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "updated": "2026-09-05",
+  "baseUrl": "https://karlbutlertts.github.io/xbj-apk-store/apks/",
+  "bundles": [
+    {
+      "id": "live-tv",
+      "name": "Live TV",
+      "icon": "📺",
+      "description": "UK free-to-air live and catch-up players.",
+      "apps": [
+        { "id": "bbc-iplayer", "name": "BBC iPlayer",  "file": "BBCiPlayer.apk",  "package": "bbc.iplayer.android" },
+        { "id": "itvx",        "name": "ITVX",         "file": "ITVX.apk",        "package": "air.ITVMobilePlayer" },
+        { "id": "channel4",    "name": "Channel 4",    "file": "Channel4.apk",    "package": "com.channel4.ondemand" },
+        { "id": "my5",         "name": "My5",          "file": "My5.apk",         "package": "com.channel5.my5" },
+        { "id": "uktv-play",   "name": "UKTV Play",    "file": "UKTVPlay.apk",    "package": "uk.co.uktv.play" },
+        { "id": "stv-player",  "name": "STV Player",   "file": "STVPlayer.apk",   "package": "com.stv.player" }
+      ]
+    },
+    {
+      "id": "streaming",
+      "name": "Streaming",
+      "icon": "🍿",
+      "description": "The big subscription and free-with-ads services.",
+      "apps": [
+        { "id": "youtube",      "name": "YouTube",        "file": "YouTube.apk",      "package": "com.google.android.youtube.tv" },
+        { "id": "netflix",      "name": "Netflix",        "file": "Netflix.apk",      "package": "com.netflix.mediaclient" },
+        { "id": "prime-video",  "name": "Prime Video",    "file": "PrimeVideo.apk",   "package": "com.amazon.avod.thirdpartyclient" },
+        { "id": "disney-plus",  "name": "Disney+",        "file": "DisneyPlus.apk",   "package": "com.disney.disneyplus" },
+        { "id": "plex",         "name": "Plex",           "file": "Plex.apk",         "package": "com.plexapp.android" }
+      ]
+    },
+    {
+      "id": "tools",
+      "name": "Setup Tools",
+      "icon": "🛠️",
+      "description": "Install these first — they make everything else easier.",
+      "apps": [
+        { "id": "downloader",   "name": "Downloader",       "file": "Downloader.apk",     "package": "com.esaba.downloader" },
+        { "id": "send-files",   "name": "Send Files to TV",  "file": "SendFilesToTV.apk",  "package": "com.yablio.sendfilestotv" },
+        { "id": "xplore",       "name": "X-plore File Manager", "file": "Xplore.apk",     "package": "com.lonelycatgames.Xplore" },
+        { "id": "wolf-launcher","name": "Wolf Launcher",     "file": "WolfLauncher.apk",   "package": "com.wolf.launcher" }
+      ]
+    },
+    {
+      "id": "kids",
+      "name": "Kids",
+      "icon": "🧸",
+      "description": "Child-friendly players and games.",
+      "apps": [
+        { "id": "cbeebies",     "name": "BBC iPlayer Kids", "file": "iPlayerKids.apk",  "package": "bbc.iplayer.kids" },
+        { "id": "youtube-kids", "name": "YouTube Kids",     "file": "YouTubeKids.apk",  "package": "com.google.android.youtube.tvkids" }
+      ]
+    }
+  ]
+}

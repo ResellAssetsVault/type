@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>App Bundles — demo</title>
+<style>
+  body{margin:0;padding:40px 24px;background:#0d0e12;color:#f4f4f5;
+       font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+  main{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+  h1{margin:0;font-size:1.8rem}
+  p.lede{margin:0;opacity:.7;line-height:1.6}
+  .quick{display:flex;gap:12px;flex-wrap:wrap}
+  .quick button{font:inherit;font-weight:600;padding:12px 20px;border-radius:10px;
+                border:1px solid rgba(255,255,255,.25);background:transparent;color:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<main>
+  <h1>Install a whole set of apps at once</h1>
+  <p class="lede">Pick a bundle and we'll walk you through every app in it, one after another.
+     Android still asks you to confirm each install — that prompt is the phone's, not ours.</p>
+
+  <!-- Bundle cards render into here, straight from bundles.json -->
+  <div id="app-bundles"></div>
+
+  <!-- Or wire your own existing buttons anywhere on the page -->
+  <div class="quick">
+    <button data-bundle="live-tv">📺 Live TV bundle</button>
+    <button data-bundle="tools">🛠️ Setup tools</button>
+  </div>
+</main>
+
+<script src="app-bundles.js" data-manifest="bundles.json" defer></script>
+</body>
+</html>
