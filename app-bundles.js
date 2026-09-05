@@ -44,8 +44,7 @@
         catalogUrl: RAW_BASE + "apps.json",
         apkBaseUrl: RAW_BASE + "apks/",
         bundles: [
-            { id: "live-tv",   name: "Live TV",   icon: "📺", description: "UK live and catch-up players.", tags: ["livetv"] },
-            { id: "streaming", name: "Streaming", icon: "🍿", description: "The big subscription services.", tags: ["streaming"] }
+            { id: "live-tv", name: "Live TV", icon: "📺", description: "UK live and catch-up players.", tags: ["livetv"] }
         ]
     };
 

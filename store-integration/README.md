@@ -38,12 +38,12 @@ Four hunks, no existing behaviour touched:
 
 Loaded against the real `apps.json`, signed in as an A5 Pro buyer:
 
-- Bundle cards render on Home in the store's own styling (they read `--accent` /
-  `--accent-deep`, so changing the brand colour carries them along).
-- Live TV shows iPlayer, Channel 4, My5, ITVX. Netflix appears in Streaming greyed as
-  *Already installed* and is left out of the install queue — its `preinstalled` flag.
-- Unlocking Entertainment adds the Sports and Movies bundles on the next render;
-  they're absent while it's locked.
+- The Live TV card renders on Home in the store's own styling (it reads `--accent` /
+  `--accent-deep`, so changing the brand colour carries it along).
+- It lists iPlayer, Channel 4, My5 and ITVX while Entertainment is locked, and picks up
+  Reezn and HD Streamz once it's unlocked — they're `apks/entertainment/` apps.
+- An app flagged `preinstalled` in apps.json shows greyed as *Already installed* and is
+  left out of the install queue (verified with Netflix on a5pro).
 - Existing store behaviour is unchanged: app cards still download, and preinstalled
   cards still open the "already on your projector" modal rather than downloading.
 - Escape and the remote's Back button close the bundle modal; the cards are `<button>`

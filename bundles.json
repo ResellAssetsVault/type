@@ -10,38 +10,6 @@
       "icon": "📺",
       "description": "UK live and catch-up players — iPlayer, ITVX, Channel 4, My5.",
       "tags": ["livetv"]
-    },
-    {
-      "id": "streaming",
-      "name": "Streaming",
-      "icon": "🍿",
-      "description": "The big subscription services.",
-      "tags": ["streaming"]
-    },
-    {
-      "id": "sports",
-      "name": "Sports",
-      "icon": "⚽",
-      "description": "Live sport apps.",
-      "tags": ["sports"]
-    },
-    {
-      "id": "movies",
-      "name": "Movies",
-      "icon": "🎬",
-      "description": "Film and box-set apps.",
-      "tags": ["movies"]
-    },
-    {
-      "id": "essentials",
-      "name": "Essentials",
-      "icon": "🛠️",
-      "description": "Start here — the tools that make everything else easier.",
-      "packages": [
-        "com.projectorguy.app",
-        "com.esaba.downloader",
-        "com.player.bear"
-      ]
     }
   ]
 }

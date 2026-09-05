@@ -6,7 +6,7 @@ iPlayer, ITVX, Channel 4 and My5, instead of finding each one on the shelves.
 | File | What it is |
 | --- | --- |
 | `app-bundles.js` | Drop-in script: renders the bundle cards and runs the install walkthrough. |
-| `bundles.json` | Which bundles exist. App data is **not** duplicated here — see below. |
+| `bundles.json` | Which bundles exist — currently just Live TV. App data is **not** duplicated here. |
 | `bundles-demo.html` | A working page to see it and copy the markup from. |
 
 ## It reads apps.json, it doesn't copy it
@@ -19,19 +19,30 @@ map onto the bundles. So a bundle is defined by tag, not by a second list of app
 ```
 
 Add a new app to `apps.json` with `"tags": ["livetv"]` and it appears in the Live TV
-bundle on the next load. Nothing here to update. For a hand-picked set, list package
-names instead and they keep the order you write them in:
+bundle on the next load. Nothing here to update.
+
+**Live TV is the only bundle right now.** To add another later, it's one block in
+`bundles.json` — by tag:
+
+```json
+{ "id": "streaming", "name": "Streaming", "icon": "🍿", "tags": ["streaming"] }
+```
+
+or, for a hand-picked set, by package name, kept in the order you write them:
 
 ```json
 { "id": "essentials", "name": "Essentials",
   "packages": ["com.projectorguy.app", "com.esaba.downloader", "com.player.bear"] }
 ```
 
+A bundle whose apps aren't in the catalog (or are locked) renders no card at all,
+rather than an empty one.
+
 The script also reuses the store shell's own logic when it's on the page:
 
 - **`visibleApps()`** — so bundles respect the projector model the buyer picked and
-  the locked Entertainment section. Sports and Movies bundles simply don't appear
-  until Entertainment is unlocked, because their apps live under `apks/entertainment/`.
+  the locked Entertainment section. Live TV shows four apps while it's locked and six
+  once it's unlocked, since Reezn and HD Streamz live under `apks/entertainment/`.
 - **`appHref()`** — so URLs, including the `media.githubusercontent.com` override that
   Git LFS files like Roblox need, come out identical to the card links.
 - **`window._allApps`** — reused rather than fetching `apps.json` a second time.
