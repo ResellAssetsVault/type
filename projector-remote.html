@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="XBJ Remote">
+    <meta name="theme-color" content="#1a1a1a">
+    <title>XBJ Projector Remote</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%231a1a1a' width='180' height='180'/><circle cx='90' cy='90' r='60' fill='%23ff6b6b'/></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #fff;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            padding: max(env(safe-area-inset-top), 12px)
+                     max(env(safe-area-inset-right), 12px)
+                     max(env(safe-area-inset-bottom), 12px)
+                     max(env(safe-area-inset-left), 12px);
+            gap: 12px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .header-action {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Status Area */
+        #connection-status {
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        #connection-status.connected {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: #4caf50;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        #connection-status.connected .status-indicator {
+            background: #4caf50;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .projector-status {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        #discovery-status {
+            font-size: 13px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        /* Main Container */
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        /* Discovery Panel */
+        .discovery-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #discovery-status {
+            padding: 8px;
+        }
+
+        /* Projector List */
+        #projector-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .projector-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            gap: 8px;
+        }
+
+        .projector-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .projector-name {
+            font-weight: 500;
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .projector-details {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .btn-connect {
+            padding: 8px 12px;
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid rgba(255, 107, 107, 0.5);
+            color: #ff6b6b;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-connect:active {
+            background: rgba(255, 107, 107, 0.3);
+        }
+
+        /* Remote Control Grid */
+        .remote-control {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .control-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            padding: 0 4px;
+        }
+
+        /* D-Pad Navigation */
+        .dpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            max-width: 160px;
+            margin: 0 auto;
+        }
+
+        .dpad-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 4px;
+            background: rgba(255, 107, 107, 0.15);
+            color: #ff6b6b;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            transition: all 0.15s;
+        }
+
+        .dpad-btn:active {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(0.95);
+        }
+
+        .dpad-center {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        /* Button Grid */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .btn-control {
+            padding: 12px;
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-control:active {
+            background: rgba(255, 107, 107, 0.3);
+            transform: scale(0.98);
+        }
+
+        .btn-control:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-control.power {
+            grid-column: 1 / -1;
+            padding: 14px;
+            font-size: 14px;
+            background: rgba(76, 175, 80, 0.15);
+            border-color: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .btn-control.power:active {
+            background: rgba(76, 175, 80, 0.25);
+        }
+
+        /* Volume Control */
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-control input {
+            flex: 1;
+            height: 32px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+            background: rgba(255, 107, 107, 0.1);
+            cursor: pointer;
+            -webkit-appearance: slider-horizontal;
+            appearance: slider-horizontal;
+        }
+
+        .volume-control input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            cursor: pointer;
+        }
+
+        .volume-control input::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-height: 600px) {
+            body {
+                padding: max(env(safe-area-inset-top), 8px)
+                         max(env(safe-area-inset-right), 8px)
+                         max(env(safe-area-inset-bottom), 8px)
+                         max(env(safe-area-inset-left), 8px);
+                gap: 8px;
+            }
+
+            .btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            h1 {
+                font-size: 18px;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 107, 107, 0.2);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎬 XBJ Remote</h1>
+        <div class="header-action" id="header-action"></div>
+    </header>
+
+    <div id="connection-status" class="status-disconnected">Not connected</div>
+    <div id="discovery-status"></div>
+
+    <div class="container">
+        <!-- Discovery Panel -->
+        <div class="discovery-panel" id="discovery-panel">
+            <button class="btn btn-primary" id="discover-btn">Scan for Projectors</button>
+            <div id="projector-list"></div>
+        </div>
+
+        <!-- Remote Control (Hidden until connected) -->
+        <div class="remote-control hidden" id="remote-control">
+            <div class="control-section">
+                <div class="section-title">Power</div>
+                <button class="btn-control power" id="power-btn">🔴 Power On/Off</button>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">Navigation</div>
+                <div class="dpad">
+                    <button class="dpad-btn" id="up-btn">▲</button>
+                    <button class="dpad-btn dpad-center" id="select-btn">OK</button>
+                    <button class="dpad-btn" id="down-btn">▼</button>
+                    <button class="dpad-btn" id="left-btn">◄</button>
+                    <button class="dpad-btn" id="back-btn">⊗</button>
+                    <button class="dpad-btn" id="right-btn">►</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">Volume</div>
+                <div class="volume-control">
+                    <button class="dpad-btn" id="vol-down-btn" style="width: 40px; height: 40px;">−</button>
+                    <input type="range" id="volume-slider" min="0" max="100" value="50">
+                    <button class="dpad-btn" id="vol-up-btn" style="width: 40px; height: 40px;">+</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">Input</div>
+                <div class="button-grid">
+                    <button class="btn-control" id="input-prev-btn">◄ Prev Input</button>
+                    <button class="btn-control" id="input-next-btn">Next Input ►</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="section-title">Menu</div>
+                <div class="button-grid">
+                    <button class="btn-control" id="menu-btn">Menu</button>
+                    <button class="btn-control" id="home-btn">Home</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="projector-remote.js"></script>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js').catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+
+        const remote = window.projectorRemote;
+        const discoverBtn = document.getElementById('discover-btn');
+        const remoteControl = document.getElementById('remote-control');
+
+        // Discovery button
+        discoverBtn.addEventListener('click', async () => {
+            discoverBtn.disabled = true;
+            discoverBtn.innerHTML = '<span class="spinner"></span>Scanning...';
+            await remote.discoverProjectors();
+            discoverBtn.disabled = false;
+            discoverBtn.textContent = 'Scan for Projectors';
+        });
+
+        // Power button
+        document.getElementById('power-btn')?.addEventListener('click', () => {
+            remote.isConnected && remote.sendCommand('power', 'toggle');
+        });
+
+        // Navigation controls
+        document.getElementById('up-btn')?.addEventListener('click', () => remote.isConnected && remote.up());
+        document.getElementById('down-btn')?.addEventListener('click', () => remote.isConnected && remote.down());
+        document.getElementById('left-btn')?.addEventListener('click', () => remote.isConnected && remote.left());
+        document.getElementById('right-btn')?.addEventListener('click', () => remote.isConnected && remote.right());
+        document.getElementById('select-btn')?.addEventListener('click', () => remote.isConnected && remote.select());
+        document.getElementById('back-btn')?.addEventListener('click', () => remote.isConnected && remote.back());
+
+        // Volume controls
+        document.getElementById('vol-up-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeUp());
+        document.getElementById('vol-down-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeDown());
+
+        // Input controls
+        document.getElementById('input-next-btn')?.addEventListener('click', () => remote.isConnected && remote.inputNext());
+        document.getElementById('input-prev-btn')?.addEventListener('click', () => remote.isConnected && remote.inputPrev());
+
+        // Menu controls
+        document.getElementById('menu-btn')?.addEventListener('click', () => remote.isConnected && remote.menuToggle());
+        document.getElementById('home-btn')?.addEventListener('click', () => remote.isConnected && remote.home());
+
+        // Update UI when connected
+        const originalConnect = remote.connectToProjector.bind(remote);
+        remote.connectToProjector = async function(ip, port) {
+            const result = await originalConnect(ip, port);
+            if (result) {
+                document.getElementById('discovery-panel').classList.add('hidden');
+                remoteControl.classList.remove('hidden');
+            }
+            return result;
+        };
+
+        // Auto-discover on load
+        remote.discoverProjectors();
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+{
+  "name": "XBJ Projector Remote",
+  "short_name": "XBJ Remote",
+  "description": "Control XBJ projectors from your phone when the remote is missing or broken",
+  "start_url": "/projector-remote.html",
+  "scope": "/",
+  "display": "fullscreen",
+  "orientation": "portrait-primary",
+  "background_color": "#1a1a1a",
+  "theme_color": "#ff6b6b",
+  "categories": ["utilities", "productivity"],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 540 720'><rect fill='%231a1a1a' width='540' height='720'/><circle cx='270' cy='360' r='100' fill='%23ff6b6b'/><text x='270' y='150' font-size='32' fill='white' text-anchor='middle' font-weight='bold'>XBJ Remote</text></svg>",
+      "sizes": "540x720",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'><rect fill='%231a1a1a' width='1280' height='720'/><circle cx='640' cy='360' r='120' fill='%23ff6b6b'/><text x='640' y='150' font-size='48' fill='white' text-anchor='middle' font-weight='bold'>XBJ Projector Remote</text></svg>",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%231a1a1a' width='192' height='192'/><circle cx='96' cy='96' r='72' fill='%23ff6b6b'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect fill='%231a1a1a' width='512' height='512'/><circle cx='256' cy='256' r='200' fill='%23ff6b6b'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Scan for Projectors",
+      "short_name": "Scan",
+      "description": "Quickly scan for available XBJ projectors",
+      "url": "/projector-remote.html?action=scan",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><rect fill='%23ff6b6b' width='96' height='96'/><text x='48' y='60' font-size='48' fill='white' text-anchor='middle' font-weight='bold'>🔍</text></svg>",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
