@@ -205,6 +205,7 @@ class XBJProjectorRemote {
     async back() { return this.sendCommand("navigate", "back"); }
     async home() { return this.sendCommand("navigate", "home"); }
     async launchApp(appName) { return this.sendCommand("app", appName); }
+    async autoFocus() { return this.sendCommand("focus", "auto"); }
 
     // UI Updates
     updateProjectorList() {

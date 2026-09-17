@@ -610,6 +610,11 @@
                 <button class="btn-control" id="input-next-btn" style="flex: 1;">Input +</button>
             </div>
 
+            <!-- Auto Focus -->
+            <div class="control-row">
+                <button class="btn-control" id="autofocus-btn" style="flex: 1;">🔍 Auto Focus</button>
+            </div>
+
             <!-- Menu -->
             <div class="control-row">
                 <button class="btn-control" id="menu-btn" style="flex: 1;">Menu</button>
@@ -659,6 +664,9 @@
         // Input controls
         document.getElementById('input-next-btn')?.addEventListener('click', () => remote.isConnected && remote.inputNext());
         document.getElementById('input-prev-btn')?.addEventListener('click', () => remote.isConnected && remote.inputPrev());
+
+        // Auto Focus control
+        document.getElementById('autofocus-btn')?.addEventListener('click', () => remote.isConnected && remote.autoFocus());
 
         // Menu controls
         document.getElementById('menu-btn')?.addEventListener('click', () => remote.isConnected && remote.menuToggle());
