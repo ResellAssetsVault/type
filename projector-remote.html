@@ -231,13 +231,79 @@
             padding: 0 4px;
         }
 
+        /* Power Button */
+        .power-section {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .btn-power {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #ff6b6b;
+            border-radius: 50%;
+            background: transparent;
+            color: #ff6b6b;
+            font-size: 28px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-power:active {
+            background: rgba(255, 107, 107, 0.2);
+            transform: scale(0.95);
+        }
+
+        /* Top Row */
+        .top-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        /* Control Row */
+        .control-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+
+        /* Small Button */
+        .btn-small {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 4px;
+            background: rgba(255, 107, 107, 0.1);
+            color: #ff6b6b;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .btn-small:active {
+            background: rgba(255, 107, 107, 0.25);
+            transform: scale(0.95);
+        }
+
         /* D-Pad Navigation */
         .dpad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             max-width: 160px;
-            margin: 0 auto;
+            margin: 0 auto 12px;
         }
 
         .dpad-btn {
@@ -345,6 +411,85 @@
             cursor: pointer;
         }
 
+        /* Streaming Buttons */
+        .streaming-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn-streaming {
+            flex: 1;
+            padding: 10px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-streaming:active {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(0.98);
+        }
+
+        .service-icon {
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+        }
+
+        .service-name {
+            font-size: 11px;
+            line-height: 1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Service-specific colors */
+        .btn-streaming.netflix {
+            border-color: rgba(229, 9, 20, 0.5);
+            background: rgba(229, 9, 20, 0.1);
+        }
+
+        .btn-streaming.netflix:active {
+            background: rgba(229, 9, 20, 0.2);
+        }
+
+        .btn-streaming.youtube {
+            border-color: rgba(255, 0, 0, 0.5);
+            background: rgba(255, 0, 0, 0.1);
+        }
+
+        .btn-streaming.youtube:active {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        .btn-streaming.disney {
+            border-color: rgba(113, 205, 229, 0.5);
+            background: rgba(113, 205, 229, 0.1);
+        }
+
+        .btn-streaming.disney:active {
+            background: rgba(113, 205, 229, 0.2);
+        }
+
+        .btn-streaming.prime {
+            border-color: rgba(70, 130, 180, 0.5);
+            background: rgba(70, 130, 180, 0.1);
+        }
+
+        .btn-streaming.prime:active {
+            background: rgba(70, 130, 180, 0.2);
+        }
+
         /* Responsive */
         @media (max-height: 600px) {
             body {
@@ -404,46 +549,73 @@
 
         <!-- Remote Control (Hidden until connected) -->
         <div class="remote-control hidden" id="remote-control">
-            <div class="control-section">
-                <div class="section-title">Power</div>
-                <button class="btn-control power" id="power-btn">🔴 Power On/Off</button>
+            <!-- Power Button -->
+            <div class="power-section">
+                <button class="btn-power" id="power-btn">⊙</button>
             </div>
 
-            <div class="control-section">
-                <div class="section-title">Navigation</div>
-                <div class="dpad">
-                    <button class="dpad-btn" id="up-btn">▲</button>
-                    <button class="dpad-btn dpad-center" id="select-btn">OK</button>
-                    <button class="dpad-btn" id="down-btn">▼</button>
-                    <button class="dpad-btn" id="left-btn">◄</button>
-                    <button class="dpad-btn" id="back-btn">⊗</button>
-                    <button class="dpad-btn" id="right-btn">►</button>
-                </div>
+            <!-- Top Row: Back & Home -->
+            <div class="top-row">
+                <button class="btn-small" id="back-btn" title="Back">◀</button>
+                <button class="btn-small" id="home-btn" title="Home">⌂</button>
             </div>
 
-            <div class="control-section">
-                <div class="section-title">Volume</div>
-                <div class="volume-control">
-                    <button class="dpad-btn" id="vol-down-btn" style="width: 40px; height: 40px;">−</button>
-                    <input type="range" id="volume-slider" min="0" max="100" value="50">
-                    <button class="dpad-btn" id="vol-up-btn" style="width: 40px; height: 40px;">+</button>
-                </div>
+            <!-- D-Pad Navigation -->
+            <div class="dpad">
+                <button class="dpad-btn" id="up-btn">▲</button>
+                <button class="dpad-btn dpad-center" id="select-btn">OK</button>
+                <button class="dpad-btn" id="down-btn">▼</button>
+                <button class="dpad-btn" id="left-btn">◄</button>
+                <div></div>
+                <button class="dpad-btn" id="right-btn">►</button>
             </div>
 
-            <div class="control-section">
-                <div class="section-title">Input</div>
-                <div class="button-grid">
-                    <button class="btn-control" id="input-prev-btn">◄ Prev Input</button>
-                    <button class="btn-control" id="input-next-btn">Next Input ►</button>
-                </div>
+            <!-- Volume & Media Controls -->
+            <div class="control-row">
+                <button class="btn-small" id="vol-down-btn" title="Volume Down">🔊−</button>
+                <button class="btn-small" id="pause-btn" title="Pause">⏸</button>
+                <button class="btn-small" id="vol-up-btn" title="Volume Up">🔊+</button>
             </div>
 
-            <div class="control-section">
-                <div class="section-title">Menu</div>
-                <div class="button-grid">
-                    <button class="btn-control" id="menu-btn">Menu</button>
-                    <button class="btn-control" id="home-btn">Home</button>
-                </div>
+            <!-- Playback Controls -->
+            <div class="control-row">
+                <button class="btn-small" id="rewind-btn" title="Rewind">⏪</button>
+                <button class="btn-small" id="play-btn" title="Play">▶</button>
+                <button class="btn-small" id="forward-btn" title="Forward">⏩</button>
+            </div>
+
+            <!-- Streaming Service Quick Buttons -->
+            <div class="streaming-buttons">
+                <button class="btn-streaming netflix" id="netflix-btn" title="Netflix">
+                    <span class="service-icon">N</span>
+                    <span class="service-name">Netflix</span>
+                </button>
+                <button class="btn-streaming youtube" id="youtube-btn" title="YouTube">
+                    <span class="service-icon">▶</span>
+                    <span class="service-name">YouTube</span>
+                </button>
+            </div>
+
+            <div class="streaming-buttons">
+                <button class="btn-streaming disney" id="disney-btn" title="Disney+">
+                    <span class="service-icon">D+</span>
+                    <span class="service-name">Disney+</span>
+                </button>
+                <button class="btn-streaming prime" id="prime-btn" title="Prime Video">
+                    <span class="service-icon">▶</span>
+                    <span class="service-name">Prime</span>
+                </button>
+            </div>
+
+            <!-- Input Selector -->
+            <div class="control-row">
+                <button class="btn-control" id="input-prev-btn" style="flex: 1;">Input −</button>
+                <button class="btn-control" id="input-next-btn" style="flex: 1;">Input +</button>
+            </div>
+
+            <!-- Menu -->
+            <div class="control-row">
+                <button class="btn-control" id="menu-btn" style="flex: 1;">Menu</button>
             </div>
         </div>
     </div>
@@ -493,7 +665,18 @@
 
         // Menu controls
         document.getElementById('menu-btn')?.addEventListener('click', () => remote.isConnected && remote.menuToggle());
-        document.getElementById('home-btn')?.addEventListener('click', () => remote.isConnected && remote.home());
+
+        // Playback controls
+        document.getElementById('play-btn')?.addEventListener('click', () => remote.isConnected && remote.sendCommand('playback', 'play'));
+        document.getElementById('pause-btn')?.addEventListener('click', () => remote.isConnected && remote.sendCommand('playback', 'pause'));
+        document.getElementById('rewind-btn')?.addEventListener('click', () => remote.isConnected && remote.sendCommand('playback', 'rewind'));
+        document.getElementById('forward-btn')?.addEventListener('click', () => remote.isConnected && remote.sendCommand('playback', 'forward'));
+
+        // Streaming service shortcuts
+        document.getElementById('netflix-btn')?.addEventListener('click', () => remote.isConnected && remote.launchApp('netflix'));
+        document.getElementById('youtube-btn')?.addEventListener('click', () => remote.isConnected && remote.launchApp('youtube'));
+        document.getElementById('disney-btn')?.addEventListener('click', () => remote.isConnected && remote.launchApp('disney'));
+        document.getElementById('prime-btn')?.addEventListener('click', () => remote.isConnected && remote.launchApp('prime'));
 
         // Update UI when connected
         const originalConnect = remote.connectToProjector.bind(remote);

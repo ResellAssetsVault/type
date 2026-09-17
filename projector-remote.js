@@ -204,6 +204,7 @@ class XBJProjectorRemote {
     async select() { return this.sendCommand("navigate", "select"); }
     async back() { return this.sendCommand("navigate", "back"); }
     async home() { return this.sendCommand("navigate", "home"); }
+    async launchApp(appName) { return this.sendCommand("app", appName); }
 
     // UI Updates
     updateProjectorList() {
