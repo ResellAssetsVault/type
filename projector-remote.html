@@ -604,10 +604,10 @@
                 </button>
             </div>
 
-            <!-- Input Selector -->
+            <!-- Volume Control -->
             <div class="control-row">
-                <button class="btn-control" id="input-prev-btn" style="flex: 1;">Input −</button>
-                <button class="btn-control" id="input-next-btn" style="flex: 1;">Input +</button>
+                <button class="btn-control" id="vol-down-btn" style="flex: 1;">🔊−</button>
+                <button class="btn-control" id="vol-up-btn" style="flex: 1;">🔊+</button>
             </div>
 
             <!-- Focus Controls -->
@@ -662,9 +662,9 @@
         document.getElementById('vol-up-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeUp());
         document.getElementById('vol-down-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeDown());
 
-        // Input controls
-        document.getElementById('input-next-btn')?.addEventListener('click', () => remote.isConnected && remote.inputNext());
-        document.getElementById('input-prev-btn')?.addEventListener('click', () => remote.isConnected && remote.inputPrev());
+        // Volume controls
+        document.getElementById('vol-up-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeUp());
+        document.getElementById('vol-down-btn')?.addEventListener('click', () => remote.isConnected && remote.volumeDown());
 
         // Focus controls
         document.getElementById('focus-plus-btn')?.addEventListener('click', () => remote.isConnected && remote.focusPlus());
