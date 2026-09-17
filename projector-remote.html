@@ -239,13 +239,13 @@
         }
 
         .btn-power {
-            width: 60px;
-            height: 60px;
+            width: 48px;
+            height: 48px;
             border: 3px solid #ff6b6b;
             border-radius: 50%;
             background: transparent;
             color: #ff6b6b;
-            font-size: 28px;
+            font-size: 20px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -301,14 +301,14 @@
         .dpad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            max-width: 160px;
+            gap: 10px;
+            max-width: 210px;
             margin: 0 auto 12px;
         }
 
         .dpad-btn {
-            width: 48px;
-            height: 48px;
+            width: 60px;
+            height: 60px;
             border: none;
             border-radius: 4px;
             background: rgba(255, 107, 107, 0.15);
@@ -413,14 +413,14 @@
 
         /* Streaming Buttons */
         .streaming-buttons {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-bottom: 8px;
         }
 
         .btn-streaming {
-            flex: 1;
-            padding: 10px 8px;
+            padding: 12px 8px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.05);
@@ -584,7 +584,7 @@
                 <button class="btn-small" id="forward-btn" title="Forward">⏩</button>
             </div>
 
-            <!-- Streaming Service Quick Buttons -->
+            <!-- Streaming Service Quick Buttons - 2x2 Grid -->
             <div class="streaming-buttons">
                 <button class="btn-streaming netflix" id="netflix-btn" title="Netflix">
                     <span class="service-icon">N</span>
@@ -594,9 +594,6 @@
                     <span class="service-icon">▶</span>
                     <span class="service-name">YouTube</span>
                 </button>
-            </div>
-
-            <div class="streaming-buttons">
                 <button class="btn-streaming disney" id="disney-btn" title="Disney+">
                     <span class="service-icon">D+</span>
                     <span class="service-name">Disney+</span>
