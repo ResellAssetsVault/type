@@ -3,3 +3,4 @@
 *.pid
 *.har
 collected/
+scripts/**/*.png
