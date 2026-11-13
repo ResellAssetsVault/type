@@ -177,7 +177,13 @@ for (const g of store.table('generations')) {
 }
 
 const port = Number(process.env.PORT) || 5173;
-app.listen(port, '127.0.0.1', () => {
+const server = app.listen(port, '127.0.0.1', () => {
   console.log(`Model Studio running at http://localhost:${port}`);
   console.log(provider === mock ? 'Demo mode: set FAL_KEY in .env to generate real images.' : `Using fal.ai (${fal.IMAGE_MODEL}, ${fal.VIDEO_MODEL})`);
+});
+server.on('error', (e) => {
+  if (e.code !== 'EADDRINUSE') throw e;
+  console.error(`\nPort ${port} is already in use: Model Studio (or another app) is probably still running in another Terminal window.`);
+  console.error(`Stop it with Control + C in that window, or run:  lsof -ti tcp:${port} | xargs kill\n`);
+  process.exit(1);
 });
