@@ -1,0 +1,9 @@
+{
+  "agent_provider": "auto",
+  "sdk": "claude",
+  "claude_code_model": "claude-sonnet-4-6",
+  "collector_model": "claude-sonnet-4-6",
+  "output_language": "python",
+  "output_dir": null,
+  "real_time_sync": true
+}
