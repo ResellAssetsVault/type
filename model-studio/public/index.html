@@ -12,6 +12,7 @@
     <nav>
       <button data-view="create" class="active">Create</button>
       <button data-view="library">Library</button>
+      <button data-view="wardrobe">Wardrobe</button>
       <button data-view="planner">Planner</button>
       <button data-view="models">Models</button>
     </nav>
@@ -41,7 +42,8 @@
           </label>
 
           <div class="field tool-only" data-for="fashion_changer">
-            <span class="label">Outfit photo</span>
+            <span class="label">Outfit</span>
+            <div class="wardrobe-pick" id="wardrobe-pick"></div>
             <div class="drop" data-input="garment"><span>Drop or click to add a photo of the outfit</span></div>
           </div>
 
@@ -86,6 +88,37 @@
         </div>
       </div>
       <div class="grid big" id="library"></div>
+    </section>
+
+    <!-- WARDROBE -->
+    <section id="view-wardrobe" class="view">
+      <div class="create-grid">
+        <form id="wardrobe-form" class="panel">
+          <h2>Add clothes</h2>
+          <span class="label">Photo (product shot or flat lay works best)</span>
+          <div class="drop" id="wardrobe-drop" data-multiple="true"><span>Drop or click to add one or more photos</span></div>
+          <div class="picked" id="wardrobe-photos"></div>
+          <label>Name <input name="name" placeholder="Black satin slip dress"></label>
+          <label>Category
+            <select name="category">
+              <option value="tops">Tops</option><option value="bottoms">Bottoms</option><option value="dresses">Dresses</option>
+              <option value="outerwear">Outerwear</option><option value="shoes">Shoes</option><option value="accessories">Accessories</option>
+              <option value="sets">Sets / full outfits</option><option value="other">Other</option>
+            </select>
+          </label>
+          <label>Notes <input name="notes" placeholder="Brand, link, how to style it"></label>
+          <button class="primary" type="submit">Add to wardrobe</button>
+          <p class="error" id="wardrobe-error"></p>
+          <p class="hint">Adding several photos at once makes one item per photo, named from the file name. You can rename them afterwards.</p>
+        </form>
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Wardrobe</h2>
+            <select id="wardrobe-filter"><option value="">All categories</option></select>
+          </div>
+          <div class="grid" id="wardrobe"></div>
+        </div>
+      </div>
     </section>
 
     <!-- PLANNER -->

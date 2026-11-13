@@ -66,6 +66,38 @@ app.delete('/api/models/:id', wrap((req, res) => {
   res.json({ ok: true });
 }));
 
+// ---- Wardrobe ---------------------------------------------------------------
+const CATEGORIES = ['tops', 'bottoms', 'dresses', 'outerwear', 'shoes', 'accessories', 'sets', 'other'];
+
+app.get('/api/wardrobe', (_req, res) => res.json(store.table('wardrobe')));
+
+app.post('/api/wardrobe', wrap((req, res) => {
+  const { name, category = 'other', notes = '', photo } = req.body;
+  if (!name?.trim()) throw new Error('Give the item a name');
+  if (!photo) throw new Error('Add a photo of the item');
+  res.json(store.insert('wardrobe', {
+    id: store.id(), name: name.trim(), category: CATEGORIES.includes(category) ? category : 'other',
+    notes, image: store.saveDataUri(photo), created_at: store.now(),
+  }));
+}));
+
+app.patch('/api/wardrobe/:id', wrap((req, res) => {
+  const patch = Object.fromEntries(Object.entries(req.body).filter(([k]) => ['name', 'category', 'notes'].includes(k)));
+  const row = store.update('wardrobe', req.params.id, patch);
+  if (!row) return res.status(404).json({ error: 'Not found' });
+  res.json(row);
+}));
+
+app.delete('/api/wardrobe/:id', wrap((req, res) => {
+  const w = store.table('wardrobe').find((r) => r.id === req.params.id);
+  if (!w) return res.status(404).json({ error: 'Not found' });
+  // Keep the photo if a generation still points at it.
+  const used = store.table('generations').some((g) => g.inputs?.garment === w.image);
+  if (!used) store.deleteMedia(w.image);
+  store.remove('wardrobe', w.id);
+  res.json({ ok: true });
+}));
+
 // ---- Generations ------------------------------------------------------------
 app.get('/api/generations', (req, res) => {
   let rows = store.table('generations');

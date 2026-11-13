@@ -1,6 +1,7 @@
 // The studio tools. Each turns a request into one or more provider jobs.
 // Prompts tell the image model to keep the person from the reference photos.
 const KEEP = 'Use the person in the reference photo(s) as the subject. Keep their face, skin tone, hair and body exactly the same. Photorealistic, natural lighting, high detail.';
+const SINGLE = 'Output ONE single photograph filling the whole frame: no collage, no grid, no split screen, no side-by-side panels, no borders.';
 
 const CAROUSEL_SHOTS = [
   'full-body wide shot, establishing the scene',
@@ -17,7 +18,7 @@ export const TOOLS = {
     kind: 'image',
     build({ prompt, count = 1, aspect }, refs) {
       if (!prompt) throw new Error('Describe the image');
-      return [{ kind: 'image', prompt: `${prompt}. ${KEEP}`, images: refs, count: clamp(count, 1, 4), aspect }];
+      return [{ kind: 'image', prompt: `${prompt}. ${KEEP} ${SINGLE}`, images: refs, count: clamp(count, 1, 4), aspect }];
     },
   },
   fashion_changer: {
@@ -39,9 +40,10 @@ export const TOOLS = {
     kind: 'image',
     build({ prompt, slides = 4, aspect }, refs) {
       if (!prompt) throw new Error('Describe the carousel scene');
-      return CAROUSEL_SHOTS.slice(0, clamp(slides, 2, 6)).map((shot) => ({
+      const n = clamp(slides, 2, 6);
+      return CAROUSEL_SHOTS.slice(0, n).map((shot) => ({
         kind: 'image',
-        prompt: `${prompt}. Same outfit, location and lighting across a social media photo carousel; this slide: ${shot}. ${KEEP}`,
+        prompt: `${prompt}. This photo is one of ${n} from the same photoshoot: same outfit, same location, same lighting. Camera framing for this photo: ${shot}. ${KEEP} ${SINGLE}`,
         images: refs,
         count: 1,
         aspect,

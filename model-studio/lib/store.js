@@ -9,7 +9,7 @@ const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 fs.mkdirSync(MEDIA_DIR, { recursive: true });
 
-const empty = { models: [], generations: [], posts: [] };
+const empty = { models: [], generations: [], posts: [], wardrobe: [] };
 let db = fs.existsSync(DB_FILE) ? { ...empty, ...JSON.parse(fs.readFileSync(DB_FILE, 'utf8')) } : structuredClone(empty);
 
 let saveTimer = null;

@@ -9,7 +9,7 @@ async function api(path, opts = {}) {
   return data;
 }
 
-const state = { tool: 'create_image', models: [], generations: [], posts: [], inputs: {}, modelPhotos: [], postMedia: [] };
+const state = { tool: 'create_image', models: [], generations: [], posts: [], wardrobe: [], inputs: {}, modelPhotos: [], postMedia: [], wardrobePhotos: [] };
 
 const HINTS = {
   create_image: 'New photos of your model from a description.',
@@ -84,6 +84,7 @@ function setInput(key, value) {
   drop.innerHTML = value ? `<img src="${esc(value)}" alt=""><button type="button" class="small">Remove</button>` : `<span>${key === 'garment' ? 'Drop or click to add a photo of the outfit' : 'Drop an image, or pick one from the library'}</span>`;
   const rm = $('button', drop);
   if (rm) rm.addEventListener('click', (e) => { e.stopPropagation(); setInput(key, null); });
+  if (key === 'garment') renderWardrobePick();
 }
 $$('.drop[data-input]').forEach((el) => makeDrop(el, async (files, url) => {
   if (url) return setInput(el.dataset.input, url);
@@ -257,6 +258,105 @@ $('#model-form').addEventListener('submit', async (e) => {
   }
 });
 
+// ---------- wardrobe ----------
+const CATS = { tops: 'Tops', bottoms: 'Bottoms', dresses: 'Dresses', outerwear: 'Outerwear', shoes: 'Shoes', accessories: 'Accessories', sets: 'Sets', other: 'Other' };
+$('#wardrobe-filter').innerHTML += Object.entries(CATS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+$('#wardrobe-filter').addEventListener('change', renderWardrobe);
+
+function renderWardrobePick() {
+  $('#wardrobe-pick').innerHTML = state.wardrobe.map((w) =>
+    `<button type="button" data-wid="${w.id}" class="${state.inputs.garment === w.image ? 'on' : ''}" title="${esc(w.name)}"><img src="${esc(w.image)}" alt=""><span>${esc(w.name)}</span></button>`).join('');
+}
+$('#wardrobe-pick').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-wid]');
+  if (!b) return;
+  const w = state.wardrobe.find((x) => x.id === b.dataset.wid);
+  setInput('garment', state.inputs.garment === w.image ? null : w.image);
+});
+
+function renderWardrobe() {
+  const f = $('#wardrobe-filter').value;
+  const list = state.wardrobe.filter((w) => !f || w.category === f);
+  $('#wardrobe').innerHTML = list.length ? list.map((w) => `<div class="card" data-wardrobe="${w.id}">
+      <div class="media square"><img src="${esc(w.image)}" alt="" loading="lazy"></div>
+      <div class="meta">
+        <input value="${esc(w.name)}" data-rename aria-label="Name">
+        <span>${CATS[w.category] || 'Other'}${w.notes ? ' · ' + esc(w.notes) : ''}</span>
+        <div class="actions">
+          <button class="small" data-w-act="use">Try on</button>
+          <button class="small danger" data-w-act="delete">Delete</button>
+        </div>
+      </div></div>`).join('')
+    : `<div class="empty">${state.wardrobe.length ? 'Nothing in this category.' : 'Your wardrobe is empty. Add photos of your clothes on the left.'}</div>`;
+  renderWardrobePick();
+}
+
+$('#wardrobe').addEventListener('click', async (e) => {
+  const act = e.target.dataset.wAct;
+  if (!act) return;
+  const id = e.target.closest('[data-wardrobe]').dataset.wardrobe;
+  const w = state.wardrobe.find((x) => x.id === id);
+  if (act === 'use') {
+    setTool('fashion_changer');
+    setInput('garment', w.image);
+    show('create');
+  } else if (act === 'delete' && confirm(`Remove "${w.name}" from the wardrobe?`)) {
+    await api(`/api/wardrobe/${id}`, { method: 'DELETE' });
+    state.wardrobe = state.wardrobe.filter((x) => x.id !== id);
+    if (state.inputs.garment === w.image) setInput('garment', null);
+    renderWardrobe();
+  }
+});
+$('#wardrobe').addEventListener('change', async (e) => {
+  if (!e.target.matches('[data-rename]')) return;
+  const id = e.target.closest('[data-wardrobe]').dataset.wardrobe;
+  const name = e.target.value.trim();
+  if (!name) return renderWardrobe();
+  Object.assign(state.wardrobe.find((x) => x.id === id), await api(`/api/wardrobe/${id}`, { method: 'PATCH', body: { name } }));
+  renderWardrobePick();
+});
+
+function renderWardrobePhotos() {
+  $('#wardrobe-photos').innerHTML = state.wardrobePhotos.map((p, i) => `<div class="thumb"><img src="${p.data}" alt=""><button type="button" class="x" data-i="${i}">×</button></div>`).join('');
+}
+$('#wardrobe-photos').addEventListener('click', (e) => {
+  if (e.target.dataset.i === undefined) return;
+  state.wardrobePhotos.splice(Number(e.target.dataset.i), 1);
+  renderWardrobePhotos();
+});
+makeDrop($('#wardrobe-drop'), async (files, url) => {
+  if (url) {
+    state.wardrobePhotos.push({ data: url, filename: '' });
+  }
+  for (const f of files.slice(0, 24)) state.wardrobePhotos.push({ data: await readImage(f, 1280), filename: f.name });
+  renderWardrobePhotos();
+});
+
+const nameFromFile = (n) => n.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Item';
+
+$('#wardrobe-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  $('#wardrobe-error').textContent = '';
+  if (!state.wardrobePhotos.length) return ($('#wardrobe-error').textContent = 'Add a photo of the item');
+  const typed = f.get('name').trim();
+  const many = state.wardrobePhotos.length > 1;
+  try {
+    for (const [i, p] of state.wardrobePhotos.entries()) {
+      const name = many ? (typed ? `${typed} ${i + 1}` : nameFromFile(p.filename)) : typed || nameFromFile(p.filename);
+      let photo = p.data;
+      if (!photo.startsWith('data:')) photo = await (await fetch(photo)).blob().then((b) => new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }));
+      state.wardrobe.unshift(await api('/api/wardrobe', { method: 'POST', body: { name, category: f.get('category'), notes: f.get('notes'), photo } }));
+    }
+    state.wardrobePhotos = [];
+    e.target.reset();
+    renderWardrobePhotos();
+    renderWardrobe();
+  } catch (err) {
+    $('#wardrobe-error').textContent = err.message;
+  }
+});
+
 // ---------- planner ----------
 function renderPostMedia() {
   $('#post-media').innerHTML = state.postMedia.length
@@ -348,11 +448,12 @@ if (window.Notification && Notification.permission === 'default') {
   const pill = $('#provider');
   pill.textContent = s.demo ? 'Demo mode, add FAL_KEY for real images' : `fal.ai connected`;
   pill.classList.toggle('demo', s.demo);
-  [state.models, state.generations, state.posts] = await Promise.all([api('/api/models'), api('/api/generations'), api('/api/posts')]);
+  [state.models, state.generations, state.posts, state.wardrobe] = await Promise.all([api('/api/models'), api('/api/generations'), api('/api/posts'), api('/api/wardrobe')]);
   setTool('create_image');
   renderModels();
   renderGenerations();
   renderPosts();
+  renderWardrobe();
   if (!state.models.length) show('models');
   poll();
 })();
