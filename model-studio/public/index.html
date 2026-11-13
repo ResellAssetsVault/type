@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Model Studio</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">Model Studio</div>
+    <nav>
+      <button data-view="create" class="active">Create</button>
+      <button data-view="library">Library</button>
+      <button data-view="planner">Planner</button>
+      <button data-view="models">Models</button>
+    </nav>
+    <div id="provider" class="pill"></div>
+  </header>
+
+  <main>
+    <!-- CREATE -->
+    <section id="view-create" class="view active">
+      <div class="create-grid">
+        <form id="create-form" class="panel">
+          <label>Model
+            <select name="modelId" id="model-select"></select>
+          </label>
+
+          <div class="tools" id="tool-tabs">
+            <button type="button" data-tool="create_image" class="active">Create Image</button>
+            <button type="button" data-tool="fashion_changer">Fashion changer</button>
+            <button type="button" data-tool="carousel">Carousel</button>
+            <button type="button" data-tool="image_to_video">Image to Video</button>
+          </div>
+
+          <p class="hint" id="tool-hint"></p>
+
+          <label>Prompt
+            <textarea name="prompt" rows="4" placeholder="Golden hour on a Lisbon rooftop, linen summer dress, laughing"></textarea>
+          </label>
+
+          <div class="field tool-only" data-for="fashion_changer">
+            <span class="label">Outfit photo</span>
+            <div class="drop" data-input="garment"><span>Drop or click to add a photo of the outfit</span></div>
+          </div>
+
+          <div class="field tool-only" data-for="image_to_video">
+            <span class="label">Start image</span>
+            <div class="drop" data-input="image"><span>Drop an image, or pick one from the library</span></div>
+          </div>
+
+          <div class="row">
+            <label class="tool-only" data-for="create_image fashion_changer">Images
+              <select name="count"><option>1</option><option>2</option><option>3</option><option>4</option></select>
+            </label>
+            <label class="tool-only" data-for="carousel">Slides
+              <select name="slides"><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+            </label>
+            <label class="tool-only" data-for="create_image fashion_changer carousel">Aspect
+              <select name="aspect"><option value="9:16">9:16 Story</option><option value="4:5">4:5 Feed</option><option value="1:1">1:1 Square</option><option value="16:9">16:9 Wide</option></select>
+            </label>
+            <label class="tool-only" data-for="image_to_video">Length
+              <select name="duration"><option value="5">5 seconds</option><option value="10">10 seconds</option></select>
+            </label>
+          </div>
+
+          <button class="primary" type="submit" id="generate-btn">Generate</button>
+          <p class="error" id="create-error"></p>
+        </form>
+
+        <div class="panel">
+          <div class="panel-head"><h2>Recent</h2><button class="link" data-goto="library">Open library →</button></div>
+          <div class="grid" id="recent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section id="view-library" class="view">
+      <div class="panel-head">
+        <h2>Library</h2>
+        <div class="filters">
+          <select id="lib-model"><option value="">All models</option></select>
+          <select id="lib-kind"><option value="">Images &amp; videos</option><option value="image">Images</option><option value="video">Videos</option></select>
+        </div>
+      </div>
+      <div class="grid big" id="library"></div>
+    </section>
+
+    <!-- PLANNER -->
+    <section id="view-planner" class="view">
+      <div class="create-grid">
+        <form id="post-form" class="panel">
+          <h2>Plan a post</h2>
+          <label>Model <select name="model_id" id="post-model"></select></label>
+          <span class="label">Media</span>
+          <div class="picked" id="post-media"><span class="hint">Pick items in the library with “Add to post”.</span></div>
+          <label>Caption <textarea name="caption" rows="4"></textarea></label>
+          <span class="label">Platforms</span>
+          <div class="checks">
+            <label><input type="checkbox" name="platforms" value="instagram"> Instagram</label>
+            <label><input type="checkbox" name="platforms" value="tiktok"> TikTok</label>
+            <label><input type="checkbox" name="platforms" value="x"> X</label>
+            <label><input type="checkbox" name="platforms" value="threads"> Threads</label>
+          </div>
+          <label>When <input type="datetime-local" name="scheduled_at" required></label>
+          <button class="primary" type="submit">Add to plan</button>
+          <p class="error" id="post-error"></p>
+          <p class="hint">Posts are planned locally. When one is due you get a reminder here, then download the media and copy the caption to post it.</p>
+        </form>
+        <div class="panel">
+          <h2>Schedule</h2>
+          <div id="posts"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODELS -->
+    <section id="view-models" class="view">
+      <div class="create-grid">
+        <form id="model-form" class="panel">
+          <h2>New model</h2>
+          <label>Name <input name="name" placeholder="Karla" required></label>
+          <label>Notes <textarea name="description" rows="2" placeholder="Style, personality, look"></textarea></label>
+          <span class="label">Reference photos (1–6, the first is the headshot)</span>
+          <div class="drop" id="model-drop" data-multiple="true"><span>Drop or click to add clear photos of the face</span></div>
+          <div class="picked" id="model-photos"></div>
+          <button class="primary" type="submit">Create model</button>
+          <p class="error" id="model-error"></p>
+        </form>
+        <div class="panel">
+          <h2>Your models</h2>
+          <div id="models" class="models"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="viewer"><div id="viewer-body"></div><form method="dialog"><button class="close">Close</button></form></dialog>
+  <input type="file" id="file" accept="image/*" hidden>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

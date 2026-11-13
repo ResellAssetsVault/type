@@ -1,0 +1,16 @@
+{
+  "name": "model-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local AI model studio: consistent-character images, outfit swaps, carousels, image-to-video and a post planner.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
