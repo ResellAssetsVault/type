@@ -28,7 +28,7 @@ export const TOOLS = {
       if (!garment) throw new Error('Add a photo of the outfit');
       return [{
         kind: 'image',
-        prompt: `Dress the person from the first reference photo(s) in the exact outfit shown in the last image (match garment cut, colour, fabric and details). ${prompt} ${KEEP}`.trim(),
+        prompt: `Dress the person from the first reference photo(s) in the exact outfit shown in the last image (match garment cut, colour, fabric and details). ${prompt} ${KEEP} ${SINGLE}`.trim(),
         images: [...refs.slice(0, 3), garment],
         count: clamp(count, 1, 4),
         aspect,
